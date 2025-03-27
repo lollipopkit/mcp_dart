@@ -19,8 +19,8 @@ Future<McpClient> connectToServer(String command) async {
   try {
     // Initialize connection with basic capabilities
     final result = await client.initialize(
-      capabilities: ClientCapabilities(),
-      clientInfo: Implementation(name: 'dart-mcp-client', version: '1.0.0'),
+      capabilities: const ClientCapabilities(),
+      clientInfo: const Implementation(name: 'dart-mcp-client', version: '1.0.0'),
     );
 
     print(
@@ -43,7 +43,7 @@ void main() async {
     // Example: Create entities in memory server
     await memoryClient.sendRequest(
       'tools/call',
-      CallToolRequestParams(
+      const CallToolRequestParams(
         name: 'create_entities',
         arguments: {
           'entities': [
@@ -77,11 +77,11 @@ void startCustomServer() {
 
   final server = McpServer(
     transport: transport,
-    capabilities: ServerCapabilities(
+    capabilities: const ServerCapabilities(
       tools: ToolsCapability(listChanged: true),
       resources: ResourcesCapability(subscribe: true),
     ),
-    serverInfo: Implementation(name: 'custom-server', version: '1.0.0'),
+    serverInfo: const Implementation(name: 'custom-server', version: '1.0.0'),
   );
 
   // Register custom tools
@@ -92,7 +92,7 @@ void startCustomServer() {
     switch (toolParams.name) {
       case 'custom_tool':
         // Handle custom tool...
-        return CallToolResult(
+        return const CallToolResult(
           content: [Content.text(type: 'text', text: 'Custom tool result')],
         );
       default:

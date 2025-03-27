@@ -1,16 +1,18 @@
 import 'dart:async';
 import 'dart:convert';
 
-import '../transport/transport_layer.dart';
-import '../types/types.dart';
+import 'package:dart_mcp/dart_mcp.dart';
+
+typedef RequestHandler = Future<dynamic> Function(dynamic);
+typedef NotificationHandler = void Function(dynamic);
 
 /// Base class for MCP servers.
 class McpServer {
   final ServerCapabilities capabilities;
   final Implementation serverInfo;
   final Transport _transport;
-  final Map<String, Future<dynamic> Function(dynamic)> _requestHandlers = {};
-  final Map<String, List<Function(dynamic)>> _notificationHandlers = {};
+  final Map<String, RequestHandler> _requestHandlers = {};
+  final Map<String, List<NotificationHandler>> _notificationHandlers = {};
 
   bool _initialized = false;
   bool _closed = false;
@@ -33,13 +35,15 @@ class McpServer {
   }
 
   /// Register a handler for requests of a specific method.
-  void onRequest(String method, Future<dynamic> Function(dynamic) handler) {
+  void onRequest(String method, RequestHandler handler) {
     _requestHandlers[method] = handler;
   }
 
   /// Register a handler for notifications of a specific method.
-  void onNotification(String method, Function(dynamic) handler) {
-    _notificationHandlers.putIfAbsent(method, () => []).add(handler);
+  void onNotification(String method, NotificationHandler handler) {
+    _notificationHandlers
+        .putIfAbsent(method, () => <NotificationHandler>[])
+        .add(handler);
   }
 
   /// Send a notification to the client.

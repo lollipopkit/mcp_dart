@@ -1,8 +1,8 @@
+import 'package:dart_mcp/src/types/base.dart';
+import 'package:dart_mcp/src/types/capabilities.dart';
+import 'package:dart_mcp/src/types/messages.dart';
+import 'package:dart_mcp/src/types/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'base.dart';
-import 'capabilities.dart';
-import 'messages.dart';
-import 'services.dart';
 
 part 'protocol.freezed.dart';
 part 'protocol.g.dart';

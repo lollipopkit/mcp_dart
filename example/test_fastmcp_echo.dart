@@ -21,20 +21,21 @@ Future<McpClient> connectToEchoServer() async {
 
   // Create and initialize the client
   final client = McpClient(transport);
-  
+
   try {
     // Initialize connection with basic capabilities
     final result = await client.initialize(
-      capabilities: ClientCapabilities(),
-      clientInfo: Implementation(
+      capabilities: const ClientCapabilities(),
+      clientInfo: const Implementation(
         name: 'test-client',
         version: '1.0.0',
       ),
     );
 
-    print('Connected to ${result.serverInfo.name} ${result.serverInfo.version}');
+    print(
+        'Connected to ${result.serverInfo.name} ${result.serverInfo.version}');
     print('Server capabilities: ${result.capabilities}');
-    
+
     return client;
   } catch (e) {
     await client.close();
@@ -50,7 +51,7 @@ void main() async {
     // List available tools
     final toolsResult = await client.sendRequest<Map<String, dynamic>>(
       'listTools',
-      RequestParams(),
+      const RequestParams(),
     );
     print('\nAvailable tools:');
     final toolsList = ListToolsResult.fromJson(toolsResult);
@@ -61,7 +62,7 @@ void main() async {
     // Call echo tool
     final echoResult = await client.sendRequest<Map<String, dynamic>>(
       'callTool',
-      CallToolRequestParams(
+      const CallToolRequestParams(
         name: 'echo',
         arguments: {'text': 'Hello, FastMCP!'},
       ),

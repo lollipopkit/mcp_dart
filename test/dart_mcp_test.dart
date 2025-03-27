@@ -14,7 +14,7 @@ class MockTransport implements Transport {
 
   @override
   Future<void> send(String message) async {
-    if (_closed) throw TransportException('Transport is closed');
+    if (_closed) throw const TransportException('Transport is closed');
     _sentMessages.add(message);
   }
 
@@ -49,8 +49,8 @@ void main() {
 
     test('initialization sends correct request', () async {
       // Prepare mock response
-      final serverInfo = Implementation(name: 'test-server', version: '1.0.0');
-      final capabilities = ServerCapabilities();
+      const serverInfo = Implementation(name: 'test-server', version: '1.0.0');
+      const capabilities = ServerCapabilities();
 
       // Schedule response
       Future(() {
@@ -67,8 +67,8 @@ void main() {
 
       // Send initialize request
       final result = await client.initialize(
-        capabilities: ClientCapabilities(),
-        clientInfo: Implementation(name: 'test-client', version: '1.0.0'),
+        capabilities: const ClientCapabilities(),
+        clientInfo: const Implementation(name: 'test-client', version: '1.0.0'),
       );
 
       // Verify request
@@ -98,8 +98,8 @@ void main() {
       transport = MockTransport();
       server = McpServer(
         transport: transport,
-        capabilities: ServerCapabilities(),
-        serverInfo: Implementation(name: 'test-server', version: '1.0.0'),
+        capabilities: const ServerCapabilities(),
+        serverInfo: const Implementation(name: 'test-server', version: '1.0.0'),
       );
     });
 
@@ -112,7 +112,7 @@ void main() {
         'jsonrpc': '2.0',
         'id': 1,
         'method': 'initialize',
-        'params': InitializeRequestParams(
+        'params': const InitializeRequestParams(
           protocolVersion: kLatestProtocolVersion,
           capabilities: ClientCapabilities(),
           clientInfo: Implementation(name: 'test-client', version: '1.0.0'),

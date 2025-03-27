@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import '../transport/transport_layer.dart';
-import '../types/types.dart';
+import 'package:dart_mcp/dart_mcp.dart';
 
 /// Base class for MCP clients.
 class McpClient {

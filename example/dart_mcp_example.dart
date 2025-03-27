@@ -10,12 +10,14 @@ void main() async {
   try {
     // Initialize the client
     final result = await client.initialize(
-      capabilities: ClientCapabilities(sampling: SamplingCapability()),
-      clientInfo: Implementation(name: 'example-client', version: '1.0.0'),
+      capabilities: const ClientCapabilities(sampling: SamplingCapability()),
+      clientInfo:
+          const Implementation(name: 'example-client', version: '1.0.0'),
     );
 
     print(
-        'Connected to server: ${result.serverInfo.name} ${result.serverInfo.version}',);
+      'Connected to server: ${result.serverInfo.name} ${result.serverInfo.version}',
+    );
     print('Server capabilities: ${result.capabilities}');
 
     // Send a ping request

@@ -1,5 +1,5 @@
 /// A Dart implementation of the Model Context Protocol (MCP).
-library dart_mcp;
+library;
 
 export 'src/client/client_module.dart';
 export 'src/server/server_module.dart';

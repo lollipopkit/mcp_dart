@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'transport.dart';
+import 'package:dart_mcp/dart_mcp.dart';
 
 /// Transport implementation that uses standard input/output streams.
 class StdioTransport implements Transport {
@@ -43,15 +43,15 @@ class StdioTransport implements Transport {
   @override
   Future<void> send(String message) async {
     if (_closed) {
-      throw TransportException('Transport is closed');
+      throw const TransportException('Transport is closed');
     }
 
+    final output = _customStdin ?? stdout;
     try {
-      final output = _customStdin ?? stdout;
       output.writeln(message);
       await output.flush();
     } catch (e) {
-      throw TransportException('Error writing to stdout', e);
+      rethrow;
     }
   }
 

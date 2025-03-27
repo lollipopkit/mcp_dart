@@ -1,12 +1,6 @@
 import 'dart:async';
 
-import '../../server/server.dart';
-import '../../transport/stdio.dart';
-import '../../transport/transport.dart';
-import '../../types/base.dart';
-import '../../types/capabilities.dart';
-import '../../types/messages.dart';
-import '../../types/services.dart';
+import 'package:dart_mcp/dart_mcp.dart';
 
 /// A tool registration that holds metadata about a registered tool.
 class ToolRegistration {
@@ -31,9 +25,9 @@ class FastMCP extends McpServer {
   FastMCP(this.name, {Transport? transport})
       : super(
           transport: transport ?? StdioTransport(),
-          capabilities: ServerCapabilities(
-            resources: const ResourcesCapability(),
-            tools: const ToolsCapability(),
+          capabilities: const ServerCapabilities(
+            resources: ResourcesCapability(),
+            tools: ToolsCapability(),
           ),
           serverInfo: Implementation(name: name, version: '1.0.0'),
         ) {
