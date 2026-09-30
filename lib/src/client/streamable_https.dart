@@ -282,6 +282,23 @@ typedef OAuthUriValidator = bool Function(
   OAuthEndpointKind endpointKind,
 );
 
+/// How a client describes itself when it registers dynamically (RFC 7591).
+///
+/// Authorization servers show these on their consent screen: without them the
+/// user is asked to authorize a client named `mcp_dart`.
+class OAuthClientMetadata {
+  /// Human-readable name of the client, sent as `client_name`.
+  final String? clientName;
+
+  /// Web page with information about the client, sent as `client_uri`.
+  final Uri? clientUri;
+
+  /// Logo of the client, sent as `logo_uri`.
+  final Uri? logoUri;
+
+  const OAuthClientMetadata({this.clientName, this.clientUri, this.logoUri});
+}
+
 /// Configuration options for the `StreamableHttpClientTransport`.
 class StreamableHttpClientTransportOptions {
   /// An OAuth client provider to use for authentication.
@@ -312,6 +329,10 @@ class StreamableHttpClientTransportOptions {
   /// `true`. Keep the policy narrow, normally by matching exact expected hosts.
   final OAuthUriValidator? oauthUriValidator;
 
+  /// Describes the client in Dynamic Client Registration. Not used when the
+  /// provider has a client ID of its own.
+  final OAuthClientMetadata? oauthClientMetadata;
+
   /// Customizes HTTP requests to the server.
   final Map<String, dynamic>? requestInit;
 
@@ -326,6 +347,7 @@ class StreamableHttpClientTransportOptions {
   const StreamableHttpClientTransportOptions({
     this.authProvider,
     this.oauthUriValidator,
+    this.oauthClientMetadata,
     this.requestInit,
     this.reconnectionOptions,
     this.sessionId,
@@ -346,6 +368,7 @@ class StreamableHttpClientTransport
   final Map<String, dynamic>? _requestInit;
   final OAuthClientProvider? _authProvider;
   final OAuthUriValidator? _oauthUriValidator;
+  final OAuthClientMetadata? _oauthClientMetadata;
   String? _sessionId;
   String? _protocolVersion;
   ToolParameterHeaderMappings _toolParameterHeaderMappings = const {};
@@ -381,6 +404,7 @@ class StreamableHttpClientTransport
         _requestInit = opts?.requestInit,
         _authProvider = opts?.authProvider,
         _oauthUriValidator = opts?.oauthUriValidator,
+        _oauthClientMetadata = opts?.oauthClientMetadata,
         _sessionId = opts?.sessionId,
         _reconnectionOptions = opts?.reconnectionOptions ??
             _defaultStreamableHttpReconnectionOptions,
@@ -767,8 +791,12 @@ class StreamableHttpClientTransport
           'Accept': 'application/json',
         },
         body: jsonEncode({
-          'client_name':
-              provider.clientId.isEmpty ? 'mcp_dart' : provider.clientId,
+          'client_name': _oauthClientMetadata?.clientName ??
+              (provider.clientId.isEmpty ? 'mcp_dart' : provider.clientId),
+          if (_oauthClientMetadata?.clientUri case final uri?)
+            'client_uri': uri.toString(),
+          if (_oauthClientMetadata?.logoUri case final uri?)
+            'logo_uri': uri.toString(),
           'redirect_uris': [provider.redirectUri.toString()],
           'grant_types': ['authorization_code', 'refresh_token'],
           'response_types': ['code'],

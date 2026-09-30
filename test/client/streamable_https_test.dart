@@ -5780,6 +5780,8 @@ void main() {
       Future<void> expectClientRegistrationSelection({
         required String clientId,
         required bool expectsDynamicRegistration,
+        OAuthClientMetadata? clientMetadata,
+        List<Map<String, dynamic>>? registrations,
       }) async {
         final oauthServer = await HttpServer.bind(
           InternetAddress.loopbackIPv4,
@@ -5835,7 +5837,8 @@ void main() {
               break;
             case '/register':
               registrationRequests += 1;
-              await utf8.decoder.bind(request).join();
+              final body = await utf8.decoder.bind(request).join();
+              registrations?.add(jsonDecode(body) as Map<String, dynamic>);
               request.response
                 ..statusCode = HttpStatus.created
                 ..headers.contentType = ContentType.json
@@ -5861,6 +5864,7 @@ void main() {
           Uri.parse('http://localhost:$oauthPort/mcp'),
           opts: StreamableHttpClientTransportOptions(
             authProvider: authProvider,
+            oauthClientMetadata: clientMetadata,
           ),
         );
         addTearDown(oauthTransport.close);
@@ -5945,10 +5949,31 @@ void main() {
       });
 
       test('uses DCR only when the provider has no client ID', () async {
+        final registrations = <Map<String, dynamic>>[];
         await expectClientRegistrationSelection(
           clientId: '',
           expectsDynamicRegistration: true,
+          registrations: registrations,
         );
+        expect(registrations.single['client_name'], 'mcp_dart');
+        expect(registrations.single, isNot(contains('client_uri')));
+      });
+
+      test('registers with the client metadata it is given', () async {
+        final registrations = <Map<String, dynamic>>[];
+        await expectClientRegistrationSelection(
+          clientId: '',
+          expectsDynamicRegistration: true,
+          clientMetadata: OAuthClientMetadata(
+            clientName: 'Server Box',
+            clientUri: Uri.parse('https://example.com/app'),
+            logoUri: Uri.parse('https://example.com/logo.png'),
+          ),
+          registrations: registrations,
+        );
+        expect(registrations.single['client_name'], 'Server Box');
+        expect(registrations.single['client_uri'], 'https://example.com/app');
+        expect(registrations.single['logo_uri'], 'https://example.com/logo.png');
       });
 
       test('uses an HTTPS client ID with a path as a metadata document',
